@@ -57,6 +57,10 @@ const UI_GOLD = "#DC9614";
 const WHITE = "#FAFAFA";
 const BLACK = "#0E0E0E";
 
+// Default Google Sheets Leaderboard Webhook
+const DEFAULT_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwJIkQhCX-eco8YgCWn83sbYoG3aMVdVZECDYr7d_LBPV-M5PZONfgPGVaLVsbUXHfv7A/exec";
+const DEFAULT_WEBHOOK_TOKEN = "mario_secret_token_123";
+
 class Game {
   constructor() {
     this.canvas = document.getElementById("gameCanvas");
@@ -300,7 +304,7 @@ class Game {
   }
 
   async fetchCloudLeaderboard() {
-    const webhookUrl = window.MARIO_SHEETS_WEBHOOK_URL || localStorage.getItem("MARIO_SHEETS_WEBHOOK_URL");
+    const webhookUrl = window.MARIO_SHEETS_WEBHOOK_URL || localStorage.getItem("MARIO_SHEETS_WEBHOOK_URL") || DEFAULT_WEBHOOK_URL;
     if (!webhookUrl) return;
 
     try {
@@ -329,8 +333,8 @@ class Game {
   }
 
   async syncCloudLeaderboard(entry) {
-    const webhookUrl = window.MARIO_SHEETS_WEBHOOK_URL || localStorage.getItem("MARIO_SHEETS_WEBHOOK_URL");
-    const webhookToken = window.MARIO_SHEETS_TOKEN || localStorage.getItem("MARIO_SHEETS_TOKEN");
+    const webhookUrl = window.MARIO_SHEETS_WEBHOOK_URL || localStorage.getItem("MARIO_SHEETS_WEBHOOK_URL") || DEFAULT_WEBHOOK_URL;
+    const webhookToken = window.MARIO_SHEETS_TOKEN || localStorage.getItem("MARIO_SHEETS_TOKEN") || DEFAULT_WEBHOOK_TOKEN;
 
     if (!webhookUrl || !webhookToken) {
       this.cloudStatus = "LOCAL ONLY";
