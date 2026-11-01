@@ -1,0 +1,174 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0c0f14;
+  color: #fafafa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  user-select: none;
+}
+
+.arcade-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1320px;
+  padding: 12px;
+}
+
+.arcade-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1280px;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+.arcade-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.badge {
+  background: linear-gradient(135deg, #d82800, #fc9838);
+  color: #fff;
+  font-weight: 900;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 0 10px rgba(216, 40, 0, 0.4);
+}
+
+.title-text {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #fcd844;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.arcade-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.arcade-btn {
+  background: #1e2430;
+  color: #e2e8f0;
+  border: 1px solid #475569;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.arcade-btn:hover {
+  background: #2e3848;
+  border-color: #64748b;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.arcade-btn:active {
+  transform: translateY(0);
+}
+
+.canvas-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  aspect-ratio: 1280 / 600;
+  background-color: #14100c;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 0 2px #262c36;
+}
+
+#gameCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  cursor: pointer;
+}
+
+.instructions-card {
+  margin-top: 14px;
+  width: 100%;
+  max-width: 1280px;
+  background: #141820;
+  border: 1px solid #262c36;
+  border-radius: 8px;
+  padding: 12px 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.inst-col h4 {
+  color: #fcd844;
+  margin-bottom: 6px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.inst-col ul {
+  list-style: none;
+}
+
+.inst-col li {
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kbd {
+  background: #262c36;
+  border: 1px solid #475569;
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-family: monospace;
+  font-size: 11px;
+  color: #fff;
+}
+
+.highlight {
+  color: #80d010;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .arcade-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+}
+

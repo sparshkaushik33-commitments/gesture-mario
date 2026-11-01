@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Mario Bros Arcade - AI Hand Gesture Edition</title>
+  <meta name="description" content="60 FPS retro Mario platformer powered by MediaPipe AI hand gesture tracking, 4 playable worlds, procedural chiptune audio, and arcade photo booth.">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Google MediaPipe Hands & Camera Utils -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="arcade-container">
+    <header class="arcade-header">
+      <div class="arcade-title">
+        <span class="badge">60 FPS AI</span>
+        <span class="title-text">SUPER MARIO ARCADE</span>
+      </div>
+      <div class="arcade-actions">
+        <button class="arcade-btn" id="btnAudio">
+          <span>🔊</span> <span id="audioText">Mute (M)</span>
+        </button>
+        <button class="arcade-btn" id="btnFullscreen">
+          <span>⛶</span> <span>Fullscreen</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="canvas-wrapper" id="canvasWrapper">
+      <canvas id="gameCanvas" width="1280" height="600"></canvas>
+    </div>
+
+    <!-- Hidden webcam video element feeding MediaPipe -->
+    <video id="webcamVideo" playsinline autoplay muted style="display: none;"></video>
+
+    <footer class="instructions-card">
+      <div class="inst-col">
+        <h4>AI Hand Gestures (Webcam)</h4>
+        <ul>
+          <li><span class="highlight">4 or 5 Fingers:</span> Run Right (Open Palm)</li>
+          <li><span class="highlight">3 Fingers:</span> Jump + Run Right</li>
+          <li><span class="highlight">2 Fingers:</span> Run Left (Peace Sign)</li>
+          <li><span class="highlight">1 Finger:</span> Jump (Index / Thumb Up)</li>
+          <li><span class="highlight">Closed Fist:</span> Stop Movement</li>
+        </ul>
+      </div>
+      <div class="inst-col">
+        <h4>Keyboard Controls</h4>
+        <ul>
+          <li><span class="kbd">D</span> or <span class="kbd">→</span> : Run Right</li>
+          <li><span class="kbd">A</span> or <span class="kbd">←</span> : Run Left</li>
+          <li><span class="kbd">Space</span> / <span class="kbd">W</span> / <span class="kbd">↑</span> : Jump</li>
+          <li><span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span> <span class="kbd">4</span> : Warp to World 1-1 to 1-4</li>
+          <li><span class="kbd">M</span> : Mute Audio | <span class="kbd">R</span> : Reset Run</li>
+        </ul>
+      </div>
+      <div class="inst-col">
+        <h4>Registration & Booth</h4>
+        <ul>
+          <li><span class="highlight">Spacebar / Click:</span> Snap player photo</li>
+          <li><span class="highlight">P:</span> Toggle Cloud Photo Consent</li>
+          <li><span class="highlight">Tab / C:</span> Switch active camera</li>
+          <li><span class="highlight">Enter:</span> Launch 4-World Tour</li>
+          <li><span class="highlight">N:</span> Register New Player</li>
+        </ul>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="game.js"></script>
+  <script type="module">
+    import { audio } from "./audio.js";
+
+    const btnAudio = document.getElementById("btnAudio");
+    const audioText = document.getElementById("audioText");
+    const btnFullscreen = document.getElementById("btnFullscreen");
+    const canvasWrapper = document.getElementById("canvasWrapper");
+
+    btnAudio.addEventListener("click", () => {
+      audio.init();
+      const muted = audio.toggleMute();
+      audioText.textContent = muted ? "Unmute (M)" : "Mute (M)";
+      btnAudio.firstElementChild.textContent = muted ? "🔇" : "🔊";
+    });
+
+    btnFullscreen.addEventListener("click", () => {
+      if (!document.fullscreenElement) {
+        canvasWrapper.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key.toLowerCase() === "m") {
+        setTimeout(() => {
+          const muted = audio.muted;
+          audioText.textContent = muted ? "Unmute (M)" : "Mute (M)";
+          btnAudio.firstElementChild.textContent = muted ? "🔇" : "🔊";
+        }, 50);
+      }
+    });
+  </script>
+</body>
+</html>
+

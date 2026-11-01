@@ -1,12 +1,110 @@
-# super-mario-gesture-arcade
-Single-file Python platformer powered by MediaPipe Hands, OpenCV, and Pygame. Features multithreaded 60 FPS webcam gesture tracking, 4 playable levels, procedural NES chiptune synthesis, and HMAC-signed leaderboard sync.
-Super Mario Bros Arcade - AI Hand Gesture EditionA 60 FPS retro arcade platformer built in a single Python file (main.py) using Pygame, OpenCV, and MediaPipe Hands. Control Mario in real time using webcam hand gestures or standard keyboard controls, complete with 4 full levels, procedural 8-bit chiptune audio, pre-game player photo registration, and an HMAC-signed local and Google Sheets cloud leaderboard.Key FeaturesZero External Assets: All 8-bit sprites, tiles, 5x7 block-font typography, and square-wave NES sound effects are synthesized procedurally in code using pygame and numpy.60 FPS Non-Blocking Architecture: Webcam capture and MediaPipe hand landmark tracking run on a dedicated background thread so gameplay stays locked at 60 FPS with sub-pixel delta-time physics.Rotation-Invariant AI Hand Tracking: Uses 2D Euclidean distance ratios from the wrist and palm knuckles so finger counting works reliably even when your hand is tilted.4 Complete Worlds:World 1-1: Classic Overworld with warp pipes, question blocks, bounce springs, and Goombas.World 1-2: Underground Blue-Brick Caverns with vertical elevator lifts.World 1-3: Athletic Sky Treetops with moving cloud bridges and multi-tier coin towers.World 1-4: Bowser's Stone Fortress with lava pits and moving stone bridges.Arcade Photo Booth & Secure Leaderboard: Captures player name and optional webcam avatar before starting, signs local leaderboard records with HMAC-SHA256, and supports optional token-authenticated Google Sheets cloud sync with offline retry queuing.ControlsActionHand GestureKeyboard ShortcutRun Right4 or 5 Fingers (Open Palm)Right Arrow or DJump + Run Right3 Fingers (Index + Middle + Ring)Right Arrow + Space or W + DRun Left2 Fingers (Index + Middle Peace Sign)Left Arrow or AJump1 Finger (Index Point or Thumb Up)Spacebar, Up Arrow, or WStop0 Fingers (Closed Fist)Release movement keysSnap Photo (Registration)N/ASpacebarToggle Cloud Photo ConsentN/AP (on Registration Screen)Switch Webcam (0, 1, 2)N/AC (in game) or Tab (in booth)Warp to World 1-1 to 1-4N/A1, 2, 3, or 4New Player / Mute / ResetN/AN / M / RInstallation & Quick Start (Python 3.10 or 3.11)Clone this repository:git clone https://github.com/Hardiktulsyan/super-mario-gesture-arcade.git
+# Super Mario Bros Arcade - AI Hand Gesture Edition
+
+A 60 FPS retro arcade platformer powered by **MediaPipe AI Hand Gesture Tracking**, procedural NES 8-bit chiptune audio, and sub-pixel delta-time physics. Play directly in your web browser or run natively on desktop with Python.
+
+Control Mario in real time using your webcam hand gestures or keyboard, through 4 complete worlds with warp pipes, elevators, cloud bridges, lava pits, an arcade photo registration booth, and local/cloud leaderboard sync.
+
+---
+
+## 🚀 Instant Web Hosting & Deployment
+
+The web client runs 100% in the browser using client-side WebGL MediaPipe Hand landmark tracking and Web Audio API synthesis. Zero server GPU or bandwidth cost.
+
+### Deploy to Vercel (1-Click)
+1. Push this repository to GitHub.
+2. Go to [vercel.com/new](https://vercel.com/new) and select this repository.
+3. Keep default settings (`Other` framework, root directory `.`) and click **Deploy**.
+4. The game is live instantly with HTTPS and custom domain support!
+
+### Deploy to Netlify (1-Click)
+1. Push this repository to GitHub.
+2. Go to [app.netlify.com/start](https://app.netlify.com/start) and link your repository.
+3. Netlify automatically detects `netlify.toml` with `publish = "."`.
+4. Click **Deploy**.
+
+### Host on GitHub Pages (Free)
+1. In your GitHub repository, navigate to **Settings > Pages**.
+2. Under **Build and deployment > Source**, select **Deploy from a branch**.
+3. Choose the `main` branch and `/ (root)` folder, then click **Save**.
+4. Your game will be published at `https://<username>.github.io/<repo>/`.
+
+### Run Web Version Locally
+```bash
+# Using Node.js
+npx serve .
+# Or using Python's built-in HTTP server
+python3 -m http.server 3000
+```
+Open [http://localhost:3000](http://localhost:3000) in any modern browser (Chrome, Edge, Firefox, Safari).
+
+---
+
+## 🎮 Controls
+
+### AI Hand Gestures (Webcam)
+| Action | Hand Gesture | Description |
+| :--- | :--- | :--- |
+| **Run Right** | 🖐️ **4 or 5 Fingers** | Open Palm facing camera |
+| **Jump + Run Right** | ✌️☝️ **3 Fingers** | Index + Middle + Ring fingers up |
+| **Run Left** | ✌️ **2 Fingers** | Peace Sign (Index + Middle) |
+| **Jump** | ☝️ **1 Finger** | Index Point or Thumb Up |
+| **Stop** | ✊ **0 Fingers** | Closed Fist / Relax hand |
+
+### Keyboard Shortcuts
+| Action | Key Shortcut |
+| :--- | :--- |
+| **Move Left / Right** | `A` / `D` or `←` / `→` |
+| **Jump** | `Spacebar`, `W`, or `↑` |
+| **Jump + Run Right** | `W + D` or `Space + →` |
+| **Snap Photo (Booth)** | `Spacebar` or Click on camera preview |
+| **Toggle Cloud Consent**| `P` |
+| **Switch Camera** | `C` (in game) or `Tab` (in photo booth) |
+| **Warp to Worlds** | `1`, `2`, `3`, or `4` |
+| **Mute / Unmute** | `M` |
+| **Reset Run** | `R` |
+| **New Player Registration** | `N` |
+
+---
+
+## 🌟 Key Features
+
+- **Zero External Assets**: All 8-bit sprites, tiles, 5x7 block-font typography, and square-wave NES sound effects are synthesized procedurally in code.
+- **Client-Side AI Tracking**: Rotation-invariant 2D Euclidean distance ratios from wrist and palm knuckles detect finger states in real time without lag.
+- **60 FPS Non-Blocking Physics**: Smooth horizontal acceleration, variable jump gravity, 10-frame Coyote Time, jump buffering, and 6-pixel corner rounding step assist.
+- **4 Playable Worlds**:
+  - **World 1-1**: Classic Overworld with warp pipes, question blocks, bounce springs, and Goombas.
+  - **World 1-2**: Underground Blue-Brick Caverns with vertical elevator lifts.
+  - **World 1-3**: Athletic Sky Treetops with moving cloud bridges and multi-tier coin towers.
+  - **World 1-4**: Bowser's Stone Fortress with lava pits and moving stone bridges.
+- **Photo Booth & Leaderboard**: Captures player name and optional webcam avatar before starting, saves local leaderboard records, and supports optional Google Sheets cloud sync.
+
+---
+
+## 🐍 Desktop Version (Python & Pygame)
+
+If you also wish to run the desktop Python edition:
+
+### Installation & Run
+```bash
+# Clone the repository
+git clone https://github.com/sparshkaushik33-commitments/gesture-mario.git
 cd super-mario-gesture-arcade
-Install the pinned dependencies:pip install -r requirements.txt
-Run the game:python main.py
-Optional: Google Sheets Cloud Leaderboard SetupBy default, the game runs in LOCAL ONLY mode and saves scores to leaderboard_secure.json. To enable live Google Sheets cloud sync:Create a Google Sheet, click Extensions > Apps Script, and paste the container-bound Code.gs script.In Apps Script Project Settings > Script Properties, add MARIO_SHEETS_TOKEN with a random secret token.Deploy the script as a Web app (Execute as: Me, Who has access: Anyone) and copy the /exec URL.Set the environment variables before running main.py:Windows PowerShell:$env:MARIO_SHEETS_WEBHOOK_URL="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"
-$env:MARIO_SHEETS_TOKEN="YOUR_SECRET_TOKEN"
-py -3.11 main.py
-macOS / Linux:export MARIO_SHEETS_WEBHOOK_URL="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"
-export MARIO_SHEETS_TOKEN="YOUR_SECRET_TOKEN"
-python3.11 main.py
+
+# Install dependencies (Python 3.10, 3.11, or 3.12)
+pip install -r requirements.txt
+
+# Launch the game
+python main.py
+```
+
+### Optional: Google Sheets Cloud Leaderboard Setup
+By default, the game runs in `LOCAL ONLY` mode. To enable live Google Sheets sync:
+1. Create a Google Sheet, click **Extensions > Apps Script**, and paste the container-bound webhook script.
+2. In **Apps Script Project Settings > Script Properties**, set `MARIO_SHEETS_TOKEN` to a secret token.
+3. Deploy as a Web App (**Execute as: Me**, **Who has access: Anyone**).
+4. Export environment variables:
+   ```bash
+   export MARIO_SHEETS_WEBHOOK_URL="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"
+   export MARIO_SHEETS_TOKEN="YOUR_SECRET_TOKEN"
+   python main.py
+   ```
