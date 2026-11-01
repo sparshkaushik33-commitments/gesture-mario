@@ -104,7 +104,11 @@ class Game {
 
     // Leaderboard
     this.leaderboardEntries = this.loadLeaderboard();
-    this.cloudStatus = "LOCAL ONLY";
+    const hasCloud = Boolean(window.MARIO_SHEETS_WEBHOOK_URL || localStorage.getItem("MARIO_SHEETS_WEBHOOK_URL"));
+    this.cloudStatus = hasCloud ? "CLOUD READY" : "LOCAL ONLY";
+    if (hasCloud) {
+      this.fetchCloudLeaderboard();
+    }
 
     // Timing
     this.lastTime = performance.now();
@@ -295,6 +299,35 @@ class Game {
     this.syncCloudLeaderboard(entry);
   }
 
+  async fetchCloudLeaderboard() {
+    const webhookUrl = window.MARIO_SHEETS_WEBHOOK_URL || localStorage.getItem("MARIO_SHEETS_WEBHOOK_URL");
+    if (!webhookUrl) return;
+
+    try {
+      const res = await fetch(webhookUrl);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.status === "OK" && Array.isArray(data.entries) && data.entries.length > 0) {
+          const cloudEntries = data.entries.map((item) => ({
+            name: this.sanitizeName(item.name),
+            score: parseInt(item.score, 10) || 0,
+            coins: parseInt(item.coins, 10) || 0,
+            level: parseInt(item.level, 10) || 1,
+            timestamp: item.timestamp,
+            photo_b64: ""
+          }));
+          // Merge top scores
+          const combined = [...cloudEntries, ...this.leaderboardEntries];
+          combined.sort((a, b) => b.score - a.score);
+          this.leaderboardEntries = combined.slice(0, 7);
+          this.cloudStatus = "CLOUD SYNCED";
+        }
+      }
+    } catch (e) {
+      console.warn("Could not fetch cloud leaderboard", e);
+    }
+  }
+
   async syncCloudLeaderboard(entry) {
     const webhookUrl = window.MARIO_SHEETS_WEBHOOK_URL || localStorage.getItem("MARIO_SHEETS_WEBHOOK_URL");
     const webhookToken = window.MARIO_SHEETS_TOKEN || localStorage.getItem("MARIO_SHEETS_TOKEN");
@@ -318,18 +351,17 @@ class Game {
         payload.photo_b64 = entry.photo_b64;
       }
 
-      const res = await fetch(webhookUrl, {
+      // Use text/plain and no-cors to avoid Google Apps Script CORS preflight block
+      await fetch(webhookUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload)
       });
-      if (res.ok) {
-        this.cloudStatus = "CLOUD SYNCED";
-      } else {
-        this.cloudStatus = "SYNC ERROR";
-      }
+      this.cloudStatus = "CLOUD SYNCED";
     } catch (e) {
-      this.cloudStatus = "OFFLINE RETRY";
+      console.warn("Cloud sync error:", e);
+      this.cloudStatus = "SYNC ERROR";
     }
   }
 

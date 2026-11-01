@@ -19,6 +19,9 @@
         <span class="title-text">SUPER MARIO ARCADE</span>
       </div>
       <div class="arcade-actions">
+        <button class="arcade-btn" id="btnCloud">
+          <span>☁️</span> <span>Cloud Sync</span>
+        </button>
         <button class="arcade-btn" id="btnAudio">
           <span>🔊</span> <span id="audioText">Mute (M)</span>
         </button>
@@ -34,6 +37,32 @@
 
     <!-- Hidden webcam video element feeding MediaPipe -->
     <video id="webcamVideo" playsinline autoplay muted style="display: none;"></video>
+
+    <!-- Cloud Setup Modal -->
+    <div id="cloudModal" class="modal-backdrop" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>☁️ Google Sheets Cloud Sync</h3>
+          <button id="btnCloseModal" class="modal-close-btn">&times;</button>
+        </div>
+        <p class="modal-desc">
+          Paste your Google Apps Script Web App URL and Token to automatically save your arcade high scores to a Google Sheet!
+        </p>
+        <div class="modal-field">
+          <label for="inputSheetUrl">Google Apps Script Web App URL:</label>
+          <input type="url" id="inputSheetUrl" placeholder="https://script.google.com/macros/s/.../exec">
+        </div>
+        <div class="modal-field">
+          <label for="inputSheetToken">Secret Token (MARIO_SHEETS_TOKEN):</label>
+          <input type="text" id="inputSheetToken" placeholder="mario_secret_token_123">
+        </div>
+        <div class="modal-actions">
+          <button id="btnSaveCloud" class="arcade-btn primary-btn">Save Settings</button>
+          <button id="btnClearCloud" class="arcade-btn danger-btn">Clear</button>
+        </div>
+        <p id="cloudSavedNotice" class="modal-notice" style="display: none;">Saved! High scores will now sync to your Google Sheet.</p>
+      </div>
+    </div>
 
     <footer class="instructions-card">
       <div class="inst-col">
@@ -77,6 +106,56 @@
     const audioText = document.getElementById("audioText");
     const btnFullscreen = document.getElementById("btnFullscreen");
     const canvasWrapper = document.getElementById("canvasWrapper");
+
+    // Cloud Modal elements
+    const btnCloud = document.getElementById("btnCloud");
+    const cloudModal = document.getElementById("cloudModal");
+    const btnCloseModal = document.getElementById("btnCloseModal");
+    const inputSheetUrl = document.getElementById("inputSheetUrl");
+    const inputSheetToken = document.getElementById("inputSheetToken");
+    const btnSaveCloud = document.getElementById("btnSaveCloud");
+    const btnClearCloud = document.getElementById("btnClearCloud");
+    const cloudSavedNotice = document.getElementById("cloudSavedNotice");
+
+    btnCloud.addEventListener("click", () => {
+      inputSheetUrl.value = localStorage.getItem("MARIO_SHEETS_WEBHOOK_URL") || "";
+      inputSheetToken.value = localStorage.getItem("MARIO_SHEETS_TOKEN") || "";
+      cloudSavedNotice.style.display = "none";
+      cloudModal.style.display = "flex";
+    });
+
+    btnCloseModal.addEventListener("click", () => {
+      cloudModal.style.display = "none";
+    });
+
+    cloudModal.addEventListener("click", (e) => {
+      if (e.target === cloudModal) cloudModal.style.display = "none";
+    });
+
+    btnSaveCloud.addEventListener("click", () => {
+      const url = inputSheetUrl.value.trim();
+      const token = inputSheetToken.value.trim();
+      if (url) localStorage.setItem("MARIO_SHEETS_WEBHOOK_URL", url);
+      else localStorage.removeItem("MARIO_SHEETS_WEBHOOK_URL");
+      if (token) localStorage.setItem("MARIO_SHEETS_TOKEN", token);
+      else localStorage.removeItem("MARIO_SHEETS_TOKEN");
+
+      cloudSavedNotice.textContent = "Saved! High scores will now sync to your Google Sheet.";
+      cloudSavedNotice.style.display = "block";
+      setTimeout(() => {
+        cloudModal.style.display = "none";
+        window.location.reload();
+      }, 1000);
+    });
+
+    btnClearCloud.addEventListener("click", () => {
+      localStorage.removeItem("MARIO_SHEETS_WEBHOOK_URL");
+      localStorage.removeItem("MARIO_SHEETS_TOKEN");
+      inputSheetUrl.value = "";
+      inputSheetToken.value = "";
+      cloudSavedNotice.textContent = "Cleared cloud sync settings (Local only).";
+      cloudSavedNotice.style.display = "block";
+    });
 
     btnAudio.addEventListener("click", () => {
       audio.init();
