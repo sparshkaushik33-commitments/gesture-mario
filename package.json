@@ -6,8 +6,7 @@
   "main": "game.js",
   "scripts": {
     "start": "npx serve . -l 3000",
-    "dev": "npx serve . -l 3000",
-    "build": "echo 'Static build ready'"
+    "dev": "npx serve . -l 3000"
   },
   "keywords": [
     "mario",
