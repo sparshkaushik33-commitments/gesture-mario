@@ -91,10 +91,10 @@ git clone https://github.com/sparshkaushik33-commitments/gesture-mario.git
 cd super-mario-gesture-arcade
 
 # Install dependencies (Python 3.10, 3.11, or 3.12)
-pip install -r requirements.txt
+pip install -r desktop/requirements.txt
 
 # Launch the game
-python main.py
+python desktop/main.py
 ```
 
 ### Optional: Google Sheets Cloud Leaderboard Setup

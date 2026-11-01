@@ -1,5 +1,4 @@
-main.py
-requirements.txt
+desktop/
 .mario_secret
 leaderboard_secure.json
 pending_sync.json
