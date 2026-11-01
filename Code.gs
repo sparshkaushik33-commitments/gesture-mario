@@ -1,23 +1,8 @@
 /**
  * Super Mario Arcade - Google Sheets Cloud Leaderboard Webhook
  * 
- * SETUP INSTRUCTIONS:
- * 1. Create a new Google Sheet (e.g. name it "Mario Arcade Leaderboard").
- * 2. In Google Sheets, click: Extensions > Apps Script.
- * 3. Delete any default code in Code.gs and paste this entire script.
- * 4. In Apps Script, click: Project Settings (gear icon on left).
- * 5. Under "Script Properties", click "Add script property":
- *    - Property: MARIO_SHEETS_TOKEN
- *    - Value: Choose any random password/token (e.g. "mario_secret_token_123")
- * 6. Click "Save script properties".
- * 7. Click "Deploy" > "New deployment".
- *    - Select type: "Web app" (click the gear icon next to "Select type").
- *    - Description: "Mario Leaderboard API"
- *    - Execute as: "Me" (your Google account)
- *    - Who has access: "Anyone" (allows the game client to submit scores)
- * 8. Click "Deploy", authorize permissions when prompted, and copy the Web App URL:
- *    https://script.google.com/macros/s/.../exec
- * 9. Paste the Web App URL and Token into your Mario Arcade game settings!
+ * Automatically records scores, dates, coins, worlds, and renders the player's 
+ * captured webcam avatar photo directly in the spreadsheet!
  */
 
 function setupSheetIfNeeded(sheet) {
@@ -36,14 +21,54 @@ function setupSheetIfNeeded(sheet) {
     headerRange.setFontColor("#fcd844");
     headerRange.setFontWeight("bold");
     headerRange.setHorizontalAlignment("center");
+    headerRange.setVerticalAlignment("middle");
     sheet.setRowHeight(1, 35);
     sheet.setColumnWidth(1, 180); // Timestamp
     sheet.setColumnWidth(2, 140); // Player Name
     sheet.setColumnWidth(3, 100); // Score
     sheet.setColumnWidth(4, 90);  // Coins
     sheet.setColumnWidth(5, 90);  // World
-    sheet.setColumnWidth(6, 120); // Photo Avatar
+    sheet.setColumnWidth(6, 80);  // Photo Avatar
     sheet.setFrozenRows(1);
+  }
+}
+
+function insertAvatarImage(sheet, targetRow, photoB64, name) {
+  if (!photoB64 || typeof photoB64 !== "string") return;
+
+  var base64Data = "";
+  if (photoB64.indexOf(",") > -1) {
+    base64Data = photoB64.split(",")[1];
+  } else {
+    base64Data = photoB64;
+  }
+  if (!base64Data || base64Data.length < 100) return;
+
+  try {
+    // Remove existing image anchored in column 6 on this row
+    var existingImages = sheet.getImages();
+    for (var i = 0; i < existingImages.length; i++) {
+      var img = existingImages[i];
+      var anchor = img.getAnchorCell();
+      if (anchor.getRow() === targetRow && anchor.getColumn() === 6) {
+        img.remove();
+      }
+    }
+
+    var decoded = Utilities.base64Decode(base64Data);
+    var blob = Utilities.newBlob(decoded, "image/jpeg", (name || "player") + "_avatar.jpg");
+
+    // Make row tall enough for the 48x36 avatar
+    sheet.setRowHeight(targetRow, 46);
+    sheet.setColumnWidth(6, 80);
+
+    // Insert image centered in cell (Col 6, targetRow)
+    sheet.insertImage(blob, 6, targetRow, 16, 5);
+
+    // Clear any leftover text in that cell
+    sheet.getRange(targetRow, 6).setValue("");
+  } catch (err) {
+    Logger.log("insertAvatarImage error: " + err);
   }
 }
 
@@ -93,22 +118,19 @@ function doPost(e) {
       }
     }
 
-    var photoFormula = "";
-    if (photoB64 && photoB64.startsWith("data:image")) {
-      photoFormula = "CAPTURED PHOTO";
-    }
+    var targetRow = -1;
 
     if (foundRow > 1) {
       // Only update if new score is higher
-      if (score > existingScore) {
-        sheet.getRange(foundRow, 1, 1, 6).setValues([[
+      if (score >= existingScore) {
+        sheet.getRange(foundRow, 1, 1, 5).setValues([[
           timestamp,
           name,
           score,
           coins,
-          "1-" + level,
-          photoFormula || sheet.getRange(foundRow, 6).getValue()
+          "1-" + level
         ]]);
+        targetRow = foundRow;
       }
     } else {
       // Append new entry
@@ -118,17 +140,31 @@ function doPost(e) {
         score,
         coins,
         "1-" + level,
-        photoFormula
+        ""
       ]);
-      var newRowIdx = sheet.getLastRow();
-      sheet.getRange(newRowIdx, 1, 1, 6).setHorizontalAlignment("center");
+      targetRow = sheet.getLastRow();
+      sheet.getRange(targetRow, 1, 1, 6).setHorizontalAlignment("center").setVerticalAlignment("middle");
     }
 
     // Sort leaderboard by Score (Column 3) descending
     var totalRows = sheet.getLastRow();
     if (totalRows > 2) {
-      var sortRange = sheet.getRange(2, 1, totalRows - 1, 6);
+      var sortRange = sheet.getRange(2, 1, totalRows - 1, 5);
       sortRange.sort({ column: 3, ascending: false });
+
+      // Re-find targetRow for this player after sorting
+      var updatedNames = sheet.getRange(2, 2, totalRows - 1, 1).getValues();
+      for (var k = 0; k < updatedNames.length; k++) {
+        if (updatedNames[k][0] === name) {
+          targetRow = k + 2;
+          break;
+        }
+      }
+    }
+
+    // Insert or update avatar image at the sorted position
+    if (targetRow > 1 && photoB64) {
+      insertAvatarImage(sheet, targetRow, photoB64, name);
     }
 
     return ContentService.createTextOutput(JSON.stringify({
@@ -177,4 +213,3 @@ function doGet(e) {
     })).setMimeType(ContentService.MimeType.JSON);
   }
 }
-

@@ -77,7 +77,7 @@ class Game {
     this.capturedPhotoB64 = "";
     this.capturedThumbImg = null;
     this.capturedPreviewImg = null;
-    this.cloudPhotoConsent = false;
+    this.cloudPhotoConsent = true;
 
     this.score = 0;
     this.coins = 0;
